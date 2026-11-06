@@ -8,7 +8,7 @@ let planetX = 200;
 let planetY = 250;
 
 let velocityX = 0;
-let velocityY = 0;
+let velocityY = -1;
 
 let accelerationX = 0;
 let accelerationY = 0;
@@ -17,6 +17,9 @@ let starX = 400;
 let starY = 250;
 
 let planetMass = 100;
+let starMass = 5000;
+
+let gravitationalConstant = 0.1;
 
 function drawPlanet() {
     ctx.beginPath();
@@ -35,19 +38,27 @@ function drawStar() {
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    let dx = starX - planetX;
+    let dy = starY - planetY;
+
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 36) {
+        return;
+    }
+
+    if (distance < 1) {
+        distance = 1;
+    }
+
+    accelerationX = gravitationalConstant * starMass * dx / (distance * distance * distance);
+    accelerationY = gravitationalConstant * starMass * dy / (distance * distance * distance);
+
     velocityX += accelerationX;
     planetX += velocityX;
 
     velocityY += accelerationY;
     planetY += velocityY;
-
-    if (planetX > canvas.width + 20) {
-        planetX = -20;
-    }
-
-    if (planetY > canvas.height + 20) {
-        planetY = -20;
-    }
 
     drawPlanet();
     drawStar();
