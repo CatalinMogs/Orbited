@@ -10,7 +10,8 @@ let planet = {
     velocityX: 0,
     velocityY: -1,
     mass: 100,
-    trail: []
+    trail: [],
+    color: "#69D5FF"
 };
 
 let secondPlanet = {
@@ -19,7 +20,8 @@ let secondPlanet = {
     velocityX: 0,
     velocityY: 1,
     mass: 100,
-    trail: []
+    trail: [],
+    color: "#800080"
 };
 
 let planets = [planet, secondPlanet];
@@ -40,7 +42,7 @@ let trail = [];
 function drawPlanet(body) {
     ctx.beginPath();
     ctx.arc(body.x, body.y, 20, 0, Math.PI * 2);
-    ctx.fillStyle = "#69D5FF";
+    ctx.fillStyle = body.color;
     ctx.fill();
 }
 
