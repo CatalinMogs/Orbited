@@ -21,6 +21,8 @@ let starMass = 5000;
 
 let gravitationalConstant = 0.1;
 
+let trail = [];
+
 function drawPlanet() {
     ctx.beginPath();
     ctx.arc(planetX, planetY, 20, 0, Math.PI * 2);
@@ -33,6 +35,18 @@ function drawStar() {
     ctx.arc(starX, starY, 35, 0, Math.PI * 2);
     ctx.fillStyle = "#F5C76A";
     ctx.fill();
+}
+
+function drawTrail() {
+    ctx.beginPath();
+
+    for (let i = 0; i < trail.length; i++) {
+        ctx.lineTo(trail[i].x, trail[i].y);
+    }
+
+    ctx.strokeStyle = "#69D5FF";
+    ctx.lineWidth = 2;
+    ctx.stroke();
 }
 
 function animate() {
@@ -60,6 +74,13 @@ function animate() {
     velocityY += accelerationY;
     planetY += velocityY;
 
+    trail.push({ x: planetX, y: planetY });
+
+    if (trail.length > 500) {
+        trail.shift();
+    }
+
+    drawTrail();
     drawPlanet();
     drawStar();
 
