@@ -19,7 +19,7 @@ let secondPlanet = {
     y: 250,
     velocityX: 0,
     velocityY: 1,
-    mass: 100,
+    mass: 1000,
     trail: [],
     color: "#800080"
 };
@@ -36,6 +36,8 @@ let accelerationX = 0;
 let accelerationY = 0;
 
 let gravitationalConstant = 0.1;
+
+let timeStep = 0.1;
 
 let trail = [];
 
@@ -71,6 +73,29 @@ function animate() {
     for (let i = 0; i < planets.length; i++){
         let body = planets[i];
 
+        let accelerationX = 0;
+        let accelerationY = 0;
+
+        for (let j = 0; j < planets.length; j++) {
+            if (i === j) {
+                continue;
+            }
+
+            let otherBody = planets[j];
+
+            let dx = otherBody.x - body.x;
+            let dy = otherBody.y - body.y;
+
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 40) {
+                continue;
+            }
+
+            accelerationX += gravitationalConstant * otherBody.mass * dx / (distance * distance * distance);
+            accelerationY += gravitationalConstant * otherBody.mass * dy / (distance * distance * distance);
+        }
+
         let dx = star.x - body.x;
         let dy = star.y - body.y;
 
@@ -80,20 +105,27 @@ function animate() {
             continue;
         }
 
-       let accelerationX = gravitationalConstant * star.mass * dx / (distance * distance * distance);
-       let accelerationY = gravitationalConstant * star.mass * dy / (distance * distance * distance);
+       accelerationX += gravitationalConstant * star.mass * dx / (distance * distance * distance);
+       accelerationY += gravitationalConstant * star.mass * dy / (distance * distance * distance);
 
-       body.velocityX += accelerationX;
-       body.x += body.velocityX;
+       body.accelerationX = accelerationX;
+       body.accelerationY = accelerationY;
+    }
 
-       body.velocityY += accelerationY;
-       body.y += body.velocityY;
+    for (let i = 0; i < planets.length; i++) {
+        let body = planets[i];
 
-       body.trail.push({ x: body.x, y: body.y });
+        body.velocityX += body.accelerationX * timeStep;
+        body.x += body.velocityX * timeStep;
 
-       if (body.trail.length > 500) {
+        body.velocityY += body.accelerationY * timeStep;
+        body.y += body.velocityY * timeStep;
+
+        body.trail.push({ x: body.x, y: body.y });
+
+        if (body.trail.length > 500) {
             body.trail.shift();
-       }
+        }
     }
     
     for (let i = 0; i < planets.length; i++) {
