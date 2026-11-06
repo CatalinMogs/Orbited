@@ -9,8 +9,20 @@ let planet = {
     y: 250,
     velocityX: 0,
     velocityY: -1,
-    mass: 100
+    mass: 100,
+    trail: []
 };
+
+let secondPlanet = {
+    x: 600,
+    y: 250,
+    velocityX: 0,
+    velocityY: 1,
+    mass: 100,
+    trail: []
+};
+
+let planets = [planet, secondPlanet];
 
 let star = {
     x: 400,
@@ -25,9 +37,9 @@ let gravitationalConstant = 0.1;
 
 let trail = [];
 
-function drawPlanet() {
+function drawPlanet(body) {
     ctx.beginPath();
-    ctx.arc(planet.x, planet.y, 20, 0, Math.PI * 2);
+    ctx.arc(body.x, body.y, 20, 0, Math.PI * 2);
     ctx.fillStyle = "#69D5FF";
     ctx.fill();
 }
@@ -39,11 +51,11 @@ function drawStar() {
     ctx.fill();
 }
 
-function drawTrail() {
+function drawTrail(body) {
     ctx.beginPath();
 
-    for (let i = 0; i < trail.length; i++) {
-        ctx.lineTo(trail[i].x, trail[i].y);
+    for (let i = 0; i < body.trail.length; i++) {
+        ctx.lineTo(body.trail[i].x, body.trail[i].y);
     }
 
     ctx.strokeStyle = "#69D5FF";
@@ -54,32 +66,39 @@ function drawTrail() {
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    let dx = star.x - planet.x;
-    let dy = star.y - planet.y;
+    for (let i = 0; i < planets.length; i++){
+        let body = planets[i];
 
-    let distance = Math.sqrt(dx * dx + dy * dy);
+        let dx = star.x - body.x;
+        let dy = star.y - body.y;
 
-    if (distance < 36) {
-        return;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < 36) {
+            continue;
+        }
+
+       let accelerationX = gravitationalConstant * star.mass * dx / (distance * distance * distance);
+       let accelerationY = gravitationalConstant * star.mass * dy / (distance * distance * distance);
+
+       body.velocityX += accelerationX;
+       body.x += body.velocityX;
+
+       body.velocityY += accelerationY;
+       body.y += body.velocityY;
+
+       body.trail.push({ x: body.x, y: body.y });
+
+       if (body.trail.length > 500) {
+            body.trail.shift();
+       }
+    }
+    
+    for (let i = 0; i < planets.length; i++) {
+        drawTrail(planets[i]);
+        drawPlanet(planets[i]);
     }
 
-    accelerationX = gravitationalConstant * star.mass * dx / (distance * distance * distance);
-    accelerationY = gravitationalConstant * star.mass * dy / (distance * distance * distance);
-
-    planet.velocityX += accelerationX;
-    planet.x += planet.velocityX;
-
-    planet.velocityY += accelerationY;
-    planet.y += planet.velocityY;
-
-    trail.push({ x: planet.x, y: planet.y });
-
-    if (trail.length > 500) {
-        trail.shift();
-    }
-
-    drawTrail();
-    drawPlanet();
     drawStar();
 
     requestAnimationFrame(animate);
