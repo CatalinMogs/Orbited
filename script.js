@@ -139,3 +139,17 @@ function animate() {
 }
 
 animate();
+
+canvas.addEventListener("click", function(e) {
+    let newPlanet = {
+        x: e.offsetX,
+        y: e.offsetY,
+        velocityX: 0,
+        velocityY: 0,
+        mass: 100,
+        trail: [],
+        color: "69D5FF"
+    };
+
+    planets.push(newPlanet);
+})
