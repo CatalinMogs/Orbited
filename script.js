@@ -22,6 +22,10 @@ function animate() {
     velocityX += accelerationX;
     planetX += velocityX;
 
+    if (planetX > canvas.width + 20) {
+        planetX = -20;
+    }
+
     drawPlanet();
 
     requestAnimationFrame(animate);
