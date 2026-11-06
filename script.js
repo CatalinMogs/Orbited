@@ -4,20 +4,22 @@ const ctx = canvas.getContext("2d");
 canvas.width = 800;
 canvas.height = 500;
 
-let planetX = 200;
-let planetY = 250;
+let planet = {
+    x: 200,
+    y: 250,
+    velocityX: 0,
+    velocityY: -1,
+    mass: 100
+};
 
-let velocityX = 0;
-let velocityY = -1;
+let star = {
+    x: 400,
+    y: 250,
+    mass: 5000
+};
 
 let accelerationX = 0;
 let accelerationY = 0;
-
-let starX = 400;
-let starY = 250;
-
-let planetMass = 100;
-let starMass = 5000;
 
 let gravitationalConstant = 0.1;
 
@@ -25,14 +27,14 @@ let trail = [];
 
 function drawPlanet() {
     ctx.beginPath();
-    ctx.arc(planetX, planetY, 20, 0, Math.PI * 2);
+    ctx.arc(planet.x, planet.y, 20, 0, Math.PI * 2);
     ctx.fillStyle = "#69D5FF";
     ctx.fill();
 }
 
 function drawStar() {
     ctx.beginPath();
-    ctx.arc(starX, starY, 35, 0, Math.PI * 2);
+    ctx.arc(star.x, star.y, 35, 0, Math.PI * 2);
     ctx.fillStyle = "#F5C76A";
     ctx.fill();
 }
@@ -52,8 +54,8 @@ function drawTrail() {
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    let dx = starX - planetX;
-    let dy = starY - planetY;
+    let dx = star.x - planet.x;
+    let dy = star.y - planet.y;
 
     let distance = Math.sqrt(dx * dx + dy * dy);
 
@@ -61,20 +63,16 @@ function animate() {
         return;
     }
 
-    if (distance < 1) {
-        distance = 1;
-    }
+    accelerationX = gravitationalConstant * star.mass * dx / (distance * distance * distance);
+    accelerationY = gravitationalConstant * star.mass * dy / (distance * distance * distance);
 
-    accelerationX = gravitationalConstant * starMass * dx / (distance * distance * distance);
-    accelerationY = gravitationalConstant * starMass * dy / (distance * distance * distance);
+    planet.velocityX += accelerationX;
+    planet.x += planet.velocityX;
 
-    velocityX += accelerationX;
-    planetX += velocityX;
+    planet.velocityY += accelerationY;
+    planet.y += planet.velocityY;
 
-    velocityY += accelerationY;
-    planetY += velocityY;
-
-    trail.push({ x: planetX, y: planetY });
+    trail.push({ x: planet.x, y: planet.y });
 
     if (trail.length > 500) {
         trail.shift();
