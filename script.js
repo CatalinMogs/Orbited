@@ -4,7 +4,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = 800;
 canvas.height = 500;
 
-const massInput = document.getElementById("mass")
+const massInput = document.getElementById("mass");
 
 const velocityXInput = document.getElementById("velocityX");
 const velocityYInput = document.getElementById("velocityY");
@@ -42,14 +42,9 @@ let star = {
     mass: 5000
 };
 
-let accelerationX = 0;
-let accelerationY = 0;
-
 let gravitationalConstant = 0.1;
 
 let timeStep = 0.1;
-
-let trail = [];
 
 let isPaused = false;
 
@@ -125,7 +120,7 @@ function drawTrail(body) {
         ctx.lineTo(body.trail[i].x, body.trail[i].y);
     }
 
-    ctx.strokeStyle = "#69D5FF";
+    ctx.strokeStyle = body.color;
     ctx.lineWidth = 2;
     ctx.stroke();
 }
@@ -169,12 +164,10 @@ function animate() {
 
         let distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < 36) {
-            continue;
+        if (distance >= 36) {
+            accelerationX += gravitationalConstant * star.mass * dx / (distance * distance * distance);
+            accelerationY += gravitationalConstant * star.mass * dy / (distance * distance * distance);
         }
-
-       accelerationX += gravitationalConstant * star.mass * dx / (distance * distance * distance);
-       accelerationY += gravitationalConstant * star.mass * dy / (distance * distance * distance);
 
        body.accelerationX = accelerationX;
        body.accelerationY = accelerationY;
@@ -221,7 +214,6 @@ canvas.addEventListener("click", function(e) {
 
         if (distance < 20) {
             selectedPlanet = body;
-            console.log("Planet selected!")
             break;
         }
     }
