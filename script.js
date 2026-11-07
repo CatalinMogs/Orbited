@@ -4,6 +4,8 @@ const ctx = canvas.getContext("2d");
 canvas.width = 800;
 canvas.height = 500;
 
+const massInput = document.getElementById("mass")
+
 let planet = {
     x: 200,
     y: 250,
@@ -26,6 +28,8 @@ let secondPlanet = {
 
 let planets = [planet, secondPlanet];
 
+let selectedPlanet = null;
+
 let star = {
     x: 400,
     y: 250,
@@ -46,6 +50,15 @@ function drawPlanet(body) {
     ctx.arc(body.x, body.y, 20, 0, Math.PI * 2);
     ctx.fillStyle = body.color;
     ctx.fill();
+
+    if (body === selectedPlanet) {
+        ctx.beginPath();
+        ctx.arc(body.x, body.y, 25, 0, Math.PI * 2);
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+
 }
 
 function drawStar() {
@@ -141,6 +154,27 @@ function animate() {
 animate();
 
 canvas.addEventListener("click", function(e) {
+    selectedPlanet = null;
+
+    for (let i = 0; i < planets.length; i++) {
+        let body = planets[i];
+
+        let dx = e.offsetX - body.x;
+        let dy = e.offsetY - body.y;
+
+        let distance = Math.sqrt(dx * dx + dy * dy)
+
+        if (distance < 20) {
+            selectedPlanet = body;
+            console.log("Planet selected!")
+            break;
+        }
+    }
+
+    if (selectedPlanet !== null) {
+        return;
+    }
+    
     let newPlanet = {
         x: e.offsetX,
         y: e.offsetY,
@@ -148,8 +182,15 @@ canvas.addEventListener("click", function(e) {
         velocityY: 0,
         mass: 100,
         trail: [],
-        color: "69D5FF"
+        color: "#69D5FF"
     };
 
     planets.push(newPlanet);
-})
+});
+
+massInput.addEventListener("input", function() {
+    if (selectedPlanet !== null) {
+        selectedPlanet.mass = Number(massInput.value);
+        console.log(selectedPlanet.mass)
+    }
+});
