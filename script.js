@@ -6,6 +6,12 @@ canvas.height = 500;
 
 const massInput = document.getElementById("mass")
 
+const velocityXInput = document.getElementById("velocityX");
+const velocityYInput = document.getElementById("velocityY");
+
+const pauseButton = document.getElementById("pause");
+const resetButton = document.getElementById("reset");
+
 let planet = {
     x: 200,
     y: 250,
@@ -45,6 +51,50 @@ let timeStep = 0.1;
 
 let trail = [];
 
+let isPaused = false;
+
+pauseButton.addEventListener("click", function() {
+    isPaused = !isPaused;
+
+    if (isPaused) {
+        pauseButton.textContent = "Resume";
+    } else {
+        pauseButton.textContent = "Pause";
+    }
+});
+
+resetButton.addEventListener("click", function() {
+    planets = [
+        {
+            x: 200,
+            y: 250,
+            velocityX: 0,
+            velocityY: -1,
+            mass: 100,
+            trail: [],
+            color: "#69D5FF"
+        },
+        {
+            x: 600,
+            y: 250,
+            velocityX: 0,
+            velocityY: 1,
+            mass: 1000,
+            trail: [],
+            color: "#800080"
+        }
+    ];
+
+    selectedPlanet = null;
+
+    massInput.value = 100;
+    velocityXInput.value = 0;
+    velocityYInput.value = 0;
+
+    isPaused = false;
+    pauseButton.textContent = "Pause"
+});
+
 function drawPlanet(body) {
     ctx.beginPath();
     ctx.arc(body.x, body.y, 20, 0, Math.PI * 2);
@@ -81,6 +131,11 @@ function drawTrail(body) {
 }
 
 function animate() {
+    if (isPaused) {
+        requestAnimationFrame(animate);
+        return;
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < planets.length; i++){
@@ -191,6 +246,17 @@ canvas.addEventListener("click", function(e) {
 massInput.addEventListener("input", function() {
     if (selectedPlanet !== null) {
         selectedPlanet.mass = Number(massInput.value);
-        console.log(selectedPlanet.mass)
+    }
+});
+
+velocityXInput.addEventListener("input", function() {
+    if (selectedPlanet !== null) {
+        selectedPlanet.velocityX = Number(velocityXInput.value);
+    }
+});
+
+velocityYInput.addEventListener("input", function() {
+    if (selectedPlanet !== null) {
+        selectedPlanet.velocityY = Number(velocityYInput.value);
     }
 });
